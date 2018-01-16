@@ -22,7 +22,7 @@ import { mapGetters } from 'vuex'
 import moment from 'moment'
 import List from './List'
 import { Input, Collapse, Tabs, TabPane } from 'element-ui'
-import { ITEM_CREATE, ACTION_ITEM_INIT } from '../store/types'
+import { ITEM_CREATE, ACTION_ITEM_INIT, ITEM_ACTIVE } from '../store/types'
 
 export default {
   name: 'app',
@@ -52,6 +52,7 @@ export default {
     },
     onTabChange (tab, event) {
       this.filter = tab.name
+      this.$store.commit(ITEM_ACTIVE, null)
     }
   },
   components: { List, Input, Collapse, Tabs, TabPane }

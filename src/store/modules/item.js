@@ -10,7 +10,7 @@ const getters = {
   },
   todayItems (state, getters) {
     return getters.items.filter(item => {
-      return item.created_at >= moment().startOf('day') && item.created_at <= moment().endOf('day')
+      return item.createdAt >= moment().startOf('day') && item.createdAt <= moment().endOf('day')
     })
   },
   completedItems (state, getters) {
@@ -21,7 +21,7 @@ const getters = {
   }
 }
 
-let state = { items: {} }
+let state = { active: null, items: {} }
 
 const mutations = {
   [types.ITEMS_SET] (s, items) {
@@ -29,18 +29,22 @@ const mutations = {
   },
   [types.ITEM_CREATE] (s, { content, expire, done = false }) {
     Vue.set(s.items, uuid(), {
-      created_at: new Date(),
-      updated_at: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
       content,
       expire,
       done
     })
   },
-  [types.ITEM_UPDATE] (state, { id, content, expire, done }) {
-    Vue.set(state.items, id, { content, expire, done, updated_at: new Date() })
+  [types.ITEM_UPDATE] (state, item) {
+    Vue.set(state.items, item.id, Object.assign(item, { updatedAt: new Date() }))
   },
   [types.ITEM_DELETE] (state, id) {
     Vue.delete(state.items, id)
+  },
+  [types.ITEM_ACTIVE] (state, id) {
+    if (id !== null) console.assert(state.items[id], `Try to active nonexist item [${id}]`)
+    Vue.set(state, 'active', id)
   }
 }
 

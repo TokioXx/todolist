@@ -11,8 +11,8 @@
       <Input :value='content' class="todo-editor-content" :ref='id'/>
       <DatePicker type='datetime' v-model="newExpire" class='todo-editor-datepicker' align='right'></DatePicker>
       <div>
-        <Button class="todo-editor-save" type='danger' @click='onSave'>保存</Button>
-        <Button class="todo-editor-cancel" type='text' plain @click='onCancel'>取消</Button>
+        <Button class="todo-editor-save" type='danger' @click.stop='onSave'>保存</Button>
+        <Button class="todo-editor-cancel" type='text' plain @click.stop='onCancel'>取消</Button>
       </div>
     </div>
   </div>
@@ -20,7 +20,7 @@
 
 <script>
 import { Input, Button, Row, Col, Radio, DatePicker } from 'element-ui'
-import { ITEM_DELETE, ITEM_UPDATE } from '../store/types'
+import { ITEM_DELETE, ITEM_UPDATE, ITEM_ACTIVE } from '../store/types'
 
 export default {
   data () {
@@ -65,9 +65,10 @@ export default {
     },
     onSave (event) {
       this.$store.commit(ITEM_UPDATE, Object.assign({}, this.$props, { expire: this.newExpire }))
+      this.$store.commit(ITEM_ACTIVE, null)
     },
-    onCancel (event) {
-
+    onCancel () {
+      this.$store.commit(ITEM_ACTIVE, null)
     }
   },
   components: { Input, Button, Row, Col, Radio, DatePicker }
