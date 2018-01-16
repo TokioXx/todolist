@@ -1,8 +1,14 @@
 <template>
-  <div>
+  <div class="container">
+    <i class="el-icon-warning" v-if='expired'></i>
     <div class="todo-item" v-if='!active'>
       <Button class="todo-item-status" :icon="icon" :round="true" @click.left.stop="onDone"></Button>
-      <div class="todo-item-content">{{ content }}</div>
+      <div class="todo-item-content">
+        <div>
+          {{ content }}
+        </div>
+        <Progress v-if='percentage' :percentage='percentage' class='percentage' :status='status' :stroke-width='1' :show-text='false'></Progress>
+      </div>
       <Button class="todo-item-delete" @click.left.stop="onDelete">
         <i class="el-icon-delete"></i>
       </Button>
@@ -19,7 +25,7 @@
 </template>
 
 <script>
-import { Input, Button, Row, Col, Radio, DatePicker } from 'element-ui'
+import { Input, Button, Row, Col, Radio, DatePicker, Progress } from 'element-ui'
 import { ITEM_DELETE, ITEM_UPDATE, ITEM_ACTIVE } from '../store/types'
 
 export default {
@@ -46,6 +52,20 @@ export default {
     },
     icon: function () {
       return this.done ? 'el-icon-check' : ''
+    },
+    status: function () {
+      return this.percentage > 90 ? 'exception' : ''
+    },
+    percentage: function () {
+      if (!this.expire || this.done) {
+        return 0
+      }
+
+      const p = (Date.now() - this.createdAt) / (this.expire - this.createdAt) * 100
+      return p > 100 ? 100 : p
+    },
+    expired: function () {
+      return this.done ? false : Date.now() > this.expire
     }
   },
   methods: {
@@ -71,7 +91,7 @@ export default {
       this.$store.commit(ITEM_ACTIVE, null)
     }
   },
-  components: { Input, Button, Row, Col, Radio, DatePicker }
+  components: { Input, Button, Row, Col, Radio, DatePicker, Progress }
 }
 </script>
 
@@ -80,10 +100,20 @@ export default {
 
 $size: 20px !default
 
+.container
+  position: relative
+
+  .el-icon-warning
+    color: red
+    position: absolute
+    top: 16px
+    left: -21px
+
+
 .todo-item
   display: flex;
+  position: relative
   align-items: center
-  justify-content: space-between
   height: 48px
 
   &-status 
@@ -95,13 +125,21 @@ $size: 20px !default
     display: flex
     align-items: center
     height: $size
-    width: 70%
-
+    position: absolute
+    width: 80%
+    left: 10%
+  
+    .percentage
+      position: absolute
+      width: 100%
+      bottom: 0
+    
   &-delete 
     padding: 0 !important;
     width: $size
     height: $size
-    margin: 0 20px;
+    position: absolute
+    right: 0
 
 .todo-editor
   position: relative

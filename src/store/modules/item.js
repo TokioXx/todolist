@@ -11,13 +11,13 @@ const getters = {
   todayItems (state, getters) {
     return getters.items.filter(item => {
       return item.createdAt >= moment().startOf('day') && item.createdAt <= moment().endOf('day')
-    })
+    }).sort(item => item.done)
   },
   completedItems (state, getters) {
-    return getters.items.filter(item => item.done)
+    return getters.items.filter(item => item.done && item.createdAt < moment().startOf('day'))
   },
   uncompletedItems (state, getters) {
-    return getters.items.filter(item => !item.done)
+    return getters.items.filter(item => !item.done && item.createdAt < moment().startOf('day'))
   }
 }
 
